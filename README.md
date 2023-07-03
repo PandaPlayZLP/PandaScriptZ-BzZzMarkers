@@ -8,13 +8,23 @@ This script is a utility script for mrs.bzzz's Markers pack. It will allow you t
 - Customize marker appearance (type, color, light, animation)
 - Delete markers based on ID or coordinates
 - Automatically update marker visibility based on player distance
-
+- Either use it as library in your own scripts or add markers manually inside the config
 
 ## Installation
 
 1. Download the latest release or the repository itself.
 2. Move the script into your servers resource folder.
 3. Add `start PandaScriptZ-BzZzMarkers` to your `server.cfg` file to ensure the script is started when the server launches.
+
+## Support and Information
+
+If you need any support or have any questions, feel free to join our Discord community. We're here to help!
+
+[![Discord](https://img.shields.io/discord/1234567890?color=%237289DA&label=Discord&logo=discord&logoColor=white)](https://discord.gg/ZsZj9gCVWz)
+
+Join our Discord server by clicking on the Discord logo above or by following this link: [https://discord.gg/ZsZj9gCVWz](https://discord.gg/ZsZj9gCVWz)
+
+Our Discord community is a great place to connect with other developers, ask questions, share ideas, and get the latest updates on the script. We look forward to seeing you there!
 
 ## Usage
 
