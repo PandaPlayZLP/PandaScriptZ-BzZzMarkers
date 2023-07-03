@@ -20,9 +20,7 @@ This script is a utility script for mrs.bzzz's Markers pack. It will allow you t
 
 If you need any support or have any questions, feel free to join our Discord community. We're here to help!
 
-<a href="https://discord.gg/HHMs7Eg" target="blank">
-<img src="https://img.shields.io/discord/976202720434327562?label=Join%20Community&logo=discord&style=flat-square" alt="Join the PandaScriptZ Community Discord"/>
-</a>
+![Discord](https://img.shields.io/discord/976202720434327562)
 
 Join our Discord server by clicking on the Discord logo above or by following this link: [https://discord.gg/ZsZj9gCVWz](https://discord.gg/ZsZj9gCVWz)
 
