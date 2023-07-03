@@ -1,10 +1,20 @@
 local markers = {}
 local markersByID = {}
 
-function AddMarker(coords, type, color, light, anim, range)
+function AddMarker(coords, markerType, color, light, anim, range)
     local id = #markers + 1
+    print(anim, light)
 
-    local propName = "bzzz_marker_" .. type .. "_" .. color
+    local propName = "bzzz_marker_" .. markerType .. "_" .. color
+
+    if type(anim) == "string" then
+        anim = anim == "true"
+    end
+
+    if type(light) == "string" then
+        light = light == "true"
+    end
+
     if anim and light then
         propName = propName .. "_anim"
     elseif light then
@@ -12,6 +22,8 @@ function AddMarker(coords, type, color, light, anim, range)
     elseif anim and not light then
         propName = propName .. "_anim_nonlight"
     end
+
+    print(propName)
 
     local modelHash = GetHashKey(propName)
 
@@ -35,6 +47,7 @@ function AddMarker(coords, type, color, light, anim, range)
     markers[id] = marker
     markersByID[prop] = marker
 end
+
 
 function DeleteMarker(id_or_coords)
     local marker
@@ -102,6 +115,20 @@ if Config.AllowCommands then
         DeleteMarker(id_or_coords)
     end)
 end
+
+Citizen.CreateThread(function()
+    for k, v in pairs(Config.Markers) do
+        AddMarker(v.coords, v.type, v.color, v.light, v.anim, v.range)
+    end
+end)
+
+AddEventHandler('onResourceStop', function(resourceName)
+    if GetCurrentResourceName() == resourceName then
+        for id, marker in pairs(markers) do
+            DeleteEntity(marker.prop)
+        end
+    end
+end)
 
 exports('AddMarker', AddMarker)
 exports('DeleteMarker', DeleteMarker)
