@@ -1,9 +1,8 @@
 local markers = {}
 local markersByID = {}
 
-function AddMarker(coords, markerType, color, light, anim, range)
+function AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
     local id = #markers + 1
-    print(anim, light)
 
     local propName = "bzzz_marker_" .. markerType .. "_" .. color
 
@@ -23,8 +22,6 @@ function AddMarker(coords, markerType, color, light, anim, range)
         propName = propName .. "_anim_nonlight"
     end
 
-    print(propName)
-
     local modelHash = GetHashKey(propName)
 
     if not HasModelLoaded(modelHash) then
@@ -42,12 +39,17 @@ function AddMarker(coords, markerType, color, light, anim, range)
         model = modelHash,
         range = tonumber(range),
         exists = true,
-        coords = coords
+        coords = coords,
+        notify = notify,
+        event = event,
+        eventType = eventType,
+        eventArgs = eventArgs,
+        keyToPress = keyToPress,
+        interactionRange = interactionRange
     }
     markers[id] = marker
     markersByID[prop] = marker
 end
-
 
 function DeleteMarker(id_or_coords)
     local marker
@@ -73,8 +75,8 @@ AddEventHandler('PandaScriptZ_Markers:deleteMarker', function(id_or_coords)
 end)
 
 RegisterNetEvent('PandaScriptZ_Markers:addMarker')
-AddEventHandler('PandaScriptZ_Markers:addMarker', function(coords, type, color, light, anim, range)
-    AddMarker(coords, type, color, light, anim, range)
+AddEventHandler('PandaScriptZ_Markers:addMarker', function(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
+    AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
 end)
 
 Citizen.CreateThread(function()
@@ -99,15 +101,64 @@ Citizen.CreateThread(function()
     end
 end)
 
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        local playerCoords = GetEntityCoords(PlayerPedId())
+
+        for id, marker in pairs(markers) do
+            if marker.interactionRange then
+                local distance = #(playerCoords - vector3(marker.coords.x, marker.coords.y, marker.coords.z))
+
+                if distance <= marker.interactionRange then
+                    Config.Notify(marker.notify)
+
+                    if marker.keyToPress and IsControlJustReleased(0, marker.keyToPress) then
+                        if marker.eventType == "client" then
+                       
+                            if marker.eventArgs then
+                                TriggerEvent(marker.event, tableToArgs(marker.eventArgs))
+                            else
+                                TriggerEvent(marker.event)
+                            end
+                        elseif marker.eventType == "server" then
+                            if marker.eventArgs then
+                                TriggerServerEvent(marker.event, tableToArgs(marker.eventArgs))
+                            else
+                                TriggerServerEvent(marker.event)
+                            end
+                        end
+                        
+                    end
+                end
+            end
+        end
+    end
+end)
+
+function tableToArgs(argsTable)
+    local args = {}
+    for _, value in pairs(argsTable) do
+        table.insert(args, value)
+    end
+    return table.unpack(args)
+end
+
 if Config.AllowCommands then
     RegisterCommand('AddMarker', function(source, args, rawCommand)
         local coords = GetEntityCoords(PlayerPedId())
-        local type = args[1]
+        local markerType = args[1]
         local color = args[2]
         local light = args[3]
         local anim = args[4]
         local range = args[5]
-        AddMarker(coords, type, color, light, anim, range)
+        local notify = args[6]
+        local event = args[7]
+        local eventArgs = args[8]
+        local eventType = args[9]
+        local keyToPress = tonumber(args[10])
+        local interactionRange = tonumber(args[11])
+        AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
     end)
 
     RegisterCommand('DeleteMarker', function(source, args, rawCommand)
@@ -118,7 +169,13 @@ end
 
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Markers) do
-        AddMarker(v.coords, v.type, v.color, v.light, v.anim, v.range)
+        if type(v.coords) == 'table' then
+            for i = 1, #v.coords do
+                AddMarker(v.coords[i], v.type, v.color, v.light, v.anim, v.range, v.notify, v.event, v.eventType, v.eventArgs, v.keyToPress, v.interactionRange)
+            end
+        else
+            AddMarker(v.coords, v.type, v.color, v.light, v.anim, v.range, v.notify, v.event, v.eventType, v.eventArgs, v.keyToPress, v.interactionRange)
+        end
     end
 end)
 
