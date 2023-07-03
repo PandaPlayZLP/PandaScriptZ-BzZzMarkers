@@ -20,7 +20,7 @@ This script is a utility script for mrs.bzzz's Markers pack. It will allow you t
 
 If you need any support or have any questions, feel free to join our Discord community. We're here to help!
 
-![Discord](https://img.shields.io/discord/976202720434327562)
+[![Discord](https://img.shields.io/discord/1234567890?color=%237289DA&label=Discord&logo=discord&logoColor=white)](https://discord.gg/ZsZj9gCVWz)
 
 Join our Discord server by clicking on the Discord logo above or by following this link: [https://discord.gg/ZsZj9gCVWz](https://discord.gg/ZsZj9gCVWz)
 
