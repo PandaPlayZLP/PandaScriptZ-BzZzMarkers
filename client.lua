@@ -105,40 +105,64 @@ Citizen.CreateThread(function()
     end
 end)
 
+local pairs = pairs
+local GetEntityCoords = GetEntityCoords
+local PlayerPedId = PlayerPedId
+local IsControlJustReleased = IsControlJustReleased
+local TriggerEvent = TriggerEvent
+local TriggerServerEvent = TriggerServerEvent
+
+local minDistance = 25.0 -- Minimum distance to trigger longer wait time
+local shortWaitTime = 0 -- Wait time when player is close to a marker
+local longWaitTime = 1000 -- Wait time when player is far from any marker
+
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         local playerCoords = GetEntityCoords(PlayerPedId())
+        local closestMarkerDistance = math.huge -- Set an initial value as infinite
 
         for id, marker in pairs(markers) do
-            if marker.interactionRange then
-                local distance = #(playerCoords - vector3(marker.coords.x, marker.coords.y, marker.coords.z))
+            local interactionRange = marker.interactionRange
+            local eventType = marker.eventType
+            local eventArgs = marker.eventArgs
 
-                if distance <= marker.interactionRange then
+            if interactionRange then
+                local markerCoords = vector3(marker.coords.x, marker.coords.y, marker.coords.z)
+                local distance = #(playerCoords - markerCoords)
+
+                if distance <= interactionRange then
                     Config.Notify(marker.notify)
 
                     if marker.keyToPress and IsControlJustReleased(0, marker.keyToPress) then
-                        if marker.eventType == "client" then
-
-                            if marker.eventArgs then
-                                TriggerEvent(marker.event, tableToArgs(marker.eventArgs))
+                        if eventType == "client" then
+                            if eventArgs then
+                                TriggerEvent(marker.event, tableToArgs(eventArgs))
                             else
                                 TriggerEvent(marker.event)
                             end
-                        elseif marker.eventType == "server" then
-                            if marker.eventArgs then
-                                TriggerServerEvent(marker.event, tableToArgs(marker.eventArgs))
+                        elseif eventType == "server" then
+                            if eventArgs then
+                                TriggerServerEvent(marker.event, tableToArgs(eventArgs))
                             else
                                 TriggerServerEvent(marker.event)
                             end
                         end
-
                     end
+                end
+
+                if distance < closestMarkerDistance then
+                    closestMarkerDistance = distance
                 end
             end
         end
+
+        -- Determine the wait time based on the closest marker distance
+        local waitTime = closestMarkerDistance > minDistance and longWaitTime or shortWaitTime
+        Citizen.Wait(waitTime)
     end
 end)
+
 
 function tableToArgs(argsTable)
     local args = {}
