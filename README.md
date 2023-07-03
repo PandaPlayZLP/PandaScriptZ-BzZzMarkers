@@ -9,6 +9,8 @@ This script is a utility script for mrs.bzzz's Markers pack. It will allow you t
 - Delete markers based on ID or coordinates
 - Automatically update marker visibility based on player distance
 - Either use it as library in your own scripts or add markers manually inside the config
+- Optional usage of notifications when being close to a marker
+- Optional interaction with marker (Trigger client and server events, also with args!)
 
 ## Installation
 
@@ -33,25 +35,31 @@ Our Discord community is a great place to connect with other developers, ask que
 To spawn a marker at a specific location, use the `PandaScriptZ_Markers:addMarker` event with the following arguments:
 
 ```lua
-TriggerEvent('PandaScriptZ_Markers:addMarker', coords, type, color, light, anim, range)
+TriggerEvent('PandaScriptZ_Markers:addMarker', coords, type, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
 ```
 
-- `coords`: A table containing the x, y, and z coordinates of the marker. Example: vector3(500,500,500), vector3(Your X, Your Y, Your Z)
-- `type`: Marker type (e.g., `ambulance`, `car`, `drink`). More info can be found in your markers documentation
-- `color`: Marker color (e.g., `red`, `green`, `blue`).
-- `light`: Whether the marker should have a light (options: `true`, `false`).
-- `anim`: Whether the marker should have animation (options: `true`, `false`).
-- `range`: Marker visibility range in units. The marker will spawn/despawn base on the distance provided to save your performance. 
+- `coords`: A table containing the x, y, and z coordinates of the marker.
+- `type`: Marker type (e.g., ambulance, car, drink). More info can be found in your markers documentation.
+- `color`: Marker color (e.g., red, green, blue).
+- `light`: Whether the marker should have a light (options: true, false).
+- `anim`: Whether the marker should have animation (options: true, false).
+- `range`: Marker visibility range in units. The marker will spawn/despawn based on the distance provided to save performance.
+- `notify` (optional): Text to display as a notification when the player is in the interactionRange.
+- `event` (optional): Name of the event to trigger when the player interacts with the marker.
+- `eventType` (optional): Type of event to trigger (client or server).
+- `eventArgs` (optional): Table of arguments to pass to the event.
+- `keyToPress` (optional): Control key that needs to be pressed to trigger the event.
+- `interactionRange` (optional): Range within which the player can interact with the marker.
 
 Example usage:
 ```lua
-local coords = vector3(100,200,50}
-TriggerEvent('PandaScriptZ_Markers:addMarker', coords, 'ambulance', 'blue', false, false, 50)
+local coords = vector3(100, 200, 50)
+TriggerEvent('PandaScriptZ_Markers:addMarker', coords, 'ambulance', 'blue', false, false, 50, 'Press ~INPUT_CONTEXT~ to open the bar', 'YourEventName', 'client', {arg1 = "value1", arg2 = "value2"}, 38, 2.0)
 ```
 
 Alternatively, you can use the provided export functions to create and delete markers. The export functions also return marker data if needed for future usage.
 ```lua
-local marker = exports['PandaScriptZ-BzZzMarkers']:AddMarker(coords, type, color, light, anim, range)
+local marker = exports['PandaScriptZ-BzZzMarkers']:AddMarker(coords, type, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
 ```
 
 - `coords`: A table containing the x, y, and z coordinates of the marker.
