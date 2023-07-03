@@ -1,7 +1,8 @@
 local markers = {}
 local markersByID = {}
 
-function AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
+function AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress,
+    interactionRange)
     local id = #markers + 1
 
     local propName = "bzzz_marker_" .. markerType .. "_" .. color
@@ -75,9 +76,12 @@ AddEventHandler('PandaScriptZ_Markers:deleteMarker', function(id_or_coords)
 end)
 
 RegisterNetEvent('PandaScriptZ_Markers:addMarker')
-AddEventHandler('PandaScriptZ_Markers:addMarker', function(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
-    AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
-end)
+AddEventHandler('PandaScriptZ_Markers:addMarker',
+    function(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress,
+        interactionRange)
+        AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress,
+            interactionRange)
+    end)
 
 Citizen.CreateThread(function()
     while true do
@@ -115,7 +119,7 @@ Citizen.CreateThread(function()
 
                     if marker.keyToPress and IsControlJustReleased(0, marker.keyToPress) then
                         if marker.eventType == "client" then
-                       
+
                             if marker.eventArgs then
                                 TriggerEvent(marker.event, tableToArgs(marker.eventArgs))
                             else
@@ -128,7 +132,7 @@ Citizen.CreateThread(function()
                                 TriggerServerEvent(marker.event)
                             end
                         end
-                        
+
                     end
                 end
             end
@@ -158,7 +162,8 @@ if Config.AllowCommands then
         local eventType = args[9]
         local keyToPress = tonumber(args[10])
         local interactionRange = tonumber(args[11])
-        AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress, interactionRange)
+        AddMarker(coords, markerType, color, light, anim, range, notify, event, eventType, eventArgs, keyToPress,
+            interactionRange)
     end)
 
     RegisterCommand('DeleteMarker', function(source, args, rawCommand)
@@ -171,10 +176,12 @@ Citizen.CreateThread(function()
     for k, v in pairs(Config.Markers) do
         if type(v.coords) == 'table' then
             for i = 1, #v.coords do
-                AddMarker(v.coords[i], v.type, v.color, v.light, v.anim, v.range, v.notify, v.event, v.eventType, v.eventArgs, v.keyToPress, v.interactionRange)
+                AddMarker(v.coords[i], v.type, v.color, v.light, v.anim, v.range, v.notify, v.event, v.eventType,
+                    v.eventArgs, v.keyToPress, v.interactionRange)
             end
         else
-            AddMarker(v.coords, v.type, v.color, v.light, v.anim, v.range, v.notify, v.event, v.eventType, v.eventArgs, v.keyToPress, v.interactionRange)
+            AddMarker(v.coords, v.type, v.color, v.light, v.anim, v.range, v.notify, v.event, v.eventType, v.eventArgs,
+                v.keyToPress, v.interactionRange)
         end
     end
 end)
